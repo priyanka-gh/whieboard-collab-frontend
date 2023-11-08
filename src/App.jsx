@@ -7,7 +7,7 @@ import { useState } from 'react'
 import {toast, ToastContainer} from 'react-toastify'
 import { useCallback } from 'react'
 
-const server = "http://localhost:5000"
+const server = "https://whiteboard-collab.onrender.com/"
 const connectionOptions = {
   "force new connection": true,
   reconnectionAttempts: "Infinity",

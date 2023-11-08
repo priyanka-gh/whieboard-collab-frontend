@@ -27,8 +27,22 @@ button{
     display: none;
   }
   
-  /* Hide scrollbar for IE, Edge and Firefox */
   .hide {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none; 
+    scrollbar-width: none; 
   }
+
+input:focus, button:focus{
+    outline: none;
+    border: none;
+    outline: none;
+}
+
+.btn, input{
+    outline: none;
+    border: none;
+    border-radius: 5px;
+}
+.btn:hover{
+    color: blue;
+}

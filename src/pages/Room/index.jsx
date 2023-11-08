@@ -64,8 +64,8 @@ const RoomPage = ({user, socket, users}) => {
             </button>
             {
                 openedUserTab && (
-                    <div className="position-fixed top-0 h-100 text-white bg-dark" 
-                        style={{width:"250px", left: "0%", padding:"1rem"}}
+                    <div className="position-fixed top-0 h-100 text-white" 
+                        style={{width:"250px", left: "0%", padding:"1rem", backgroundColor: "blue"}}
                     >
                         <button 
                             type='button' 
