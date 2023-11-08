@@ -1,0 +1,34 @@
+.input{
+    bottom: 4%;
+    width: max-content;
+    position: relative;
+    left: 0;
+    outline: none;
+}
+
+button{
+    outline: none;
+}
+.input-field{
+    width: max-content;
+}
+
+.content{
+    height: 55vh;
+}
+
+.hidechat{
+    visibility: hidden !important; 
+    background-color: white;
+}
+
+
+.hide::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .hide {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }

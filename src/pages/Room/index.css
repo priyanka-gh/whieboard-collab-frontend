@@ -1,0 +1,16 @@
+.h4{
+    text-align: center;
+}
+.hide::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .hide {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+.canvas-box{
+  position: absolute;
+  bottom: 2%;
+}
