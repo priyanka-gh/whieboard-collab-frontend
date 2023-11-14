@@ -7,8 +7,8 @@ import { useState } from 'react'
 import {toast, ToastContainer} from 'react-toastify'
 import { useCallback } from 'react'
 
-const server = "https://whiteboard-collab.onrender.com/"
-// const server = "http://localhost:5000/"
+// const server = "https://whiteboard-collab.onrender.com/"
+const server = "http://localhost:5000/"
 
 const connectionOptions = {
   "force new connection": true,
@@ -31,34 +31,40 @@ const App = () => {
     } else {
       console.log("error");
     }
-  }, []);
+  }, [users]);
 
   const handleAllUsers = useCallback((data) => {
     setUsers(data);
+    console.log("data",data.length)
   }, []);
 
   const handleUserJoinedMessage = useCallback((data) => {
     toast.info(`${data} joined the room`);
   }, []);
 
+  
+  const userLeftMessage = (data) => {
+    toast.info(`${data} left the room`)
+  }
+
   useEffect(() => {
     socket.on("userIsJoined", handleUserIsJoined);
     socket.on("allUsers", handleAllUsers);
+    socket.on("userLeftMessageBroadcasted", userLeftMessage)
+  
     return () => {
       socket.off("userIsJoined", handleUserIsJoined);
       socket.off("allUsers", handleAllUsers);
-    };
-  }, [handleUserIsJoined, handleAllUsers]);
-
-  useEffect(() => {
-    socket.on("userLeftMessageBroadcasted", (data) => {
-      console.log("dta",data)
-      toast.info(`${data} left the room`)
-    })
-    return () => {
       socket.off("userLeftMessageBroadcasted");
     };
-  },[])
+  }, [handleUserIsJoined, userLeftMessage]);
+
+  // useEffect(() => {
+  //   socket.on("userLeftMessageBroadcasted", userLeftMessage)
+  //   return () => {
+  //     socket.off("userLeftMessageBroadcasted");
+  //   };
+  // },[])
 
   useEffect(() => {
     socket.on("userJoinedMessageBroadcasted", handleUserJoinedMessage);

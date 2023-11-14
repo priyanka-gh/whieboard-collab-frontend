@@ -96,6 +96,7 @@ const RoomPage = ({user, socket, users}) => {
                             <option value="pencil">Pencil</option>
                             <option value="line">Line</option>
                             <option value="rect">Rectangle</option>
+                            <option value="circle">Circle</option>
                         </select>
                         </div>
                         <div className="col-md-2">

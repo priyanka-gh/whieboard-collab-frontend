@@ -11,9 +11,8 @@ const WhiteBoard = ({canvasRef, ctxRef, elements, setElements, color, tool, user
     useEffect(() => {
         socket.on("whiteboardDataResponse", (data) => {
             const res = data.updatedData;
-
+            console.log("R",res)
             if (canvasRef) {
-              const roughCanvas = rough.canvas(canvasRef.current);
           
               if (res.length > 0) {
                 ctxRef.current.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
@@ -59,6 +58,19 @@ const WhiteBoard = ({canvasRef, ctxRef, elements, setElements, color, tool, user
                     stroke: res.color,
                   },
                 ]);
+              }
+
+              else if (res.tool === "circle") {
+                setElements((prevElements) => [
+                    ...prevElements,
+                    {
+                        type: "circle",
+                        offsetX: res.offsetX,
+                        offsetY: res.offsetY,
+                        radius: res.radius,
+                        stroke: res.color
+                    }
+                ])
               }
             }
           });
@@ -131,6 +143,21 @@ const WhiteBoard = ({canvasRef, ctxRef, elements, setElements, color, tool, user
                         )
                     )
                 }
+
+                else if (element.type == "circle"){
+                    roughCanvas.draw(
+                        roughGenerator.circle(
+                          element.offsetX, 
+                          element.offsetY, 
+                          element.radius * 2,  // Diameter = 2 * radius
+                          {
+                            stroke: element.stroke,
+                            strokeWidth: 5,
+                            roughness: 0
+                          }
+                        )
+                      )
+                }
             })
         }
     },[elements])
@@ -175,6 +202,18 @@ const WhiteBoard = ({canvasRef, ctxRef, elements, setElements, color, tool, user
                 }
             ])
         }
+        else if(tool === "circle"){
+            setElements((prevElements) => [
+                ...prevElements,
+                {
+                    type: 'circle',
+                    offsetX,
+                    offsetY,
+                    diameter: 0,
+                    stroke: color
+                }
+            ])
+        }
         setIsDrawing(true)
     }
 
@@ -206,6 +245,19 @@ const WhiteBoard = ({canvasRef, ctxRef, elements, setElements, color, tool, user
             };
             socket.emit("whiteboardData", movementData);
         }
+        if (tool === "circle") {
+            const ele = elements[elements.length - 1];
+            const movementData = {
+              tool,
+              offsetX: ele.offsetX,
+              offsetY: ele.offsetY,
+              radius: ele.radius,
+              color: elements[elements.length - 1].stroke,
+            };
+            console.log("move",movementData)
+            socket.emit("whiteboardData", movementData);
+          }
+        
     }
 
     const handleMouseMove = (e) => {
@@ -278,6 +330,21 @@ const WhiteBoard = ({canvasRef, ctxRef, elements, setElements, color, tool, user
                 };
                 socket.emit("whiteboardData", movementData);
             }
+
+            else if (tool === "circle") {
+                setElements((prevElements) => {
+                  return prevElements.map((ele, index) => {
+                    if (index === elements.length - 1) {
+                      return {
+                        ...ele,
+                        radius: Math.sqrt(Math.pow(offsetX - ele.offsetX, 2) + Math.pow(offsetY - ele.offsetY, 2)),
+                      };
+                    } else {
+                      return ele;
+                    }
+                  });
+                });
+              }
         }
     }
     
