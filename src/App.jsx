@@ -8,6 +8,8 @@ import {toast, ToastContainer} from 'react-toastify'
 import { useCallback } from 'react'
 
 const server = "https://whiteboard-collab.onrender.com/"
+// const server = "http://localhost:5000/"
+
 const connectionOptions = {
   "force new connection": true,
   reconnectionAttempts: "Infinity",

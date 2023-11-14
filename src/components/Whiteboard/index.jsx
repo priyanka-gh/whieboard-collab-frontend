@@ -6,43 +6,92 @@ import "./index.css"
 const roughGenerator = rough.generator()
 
 const WhiteBoard = ({canvasRef, ctxRef, elements, setElements, color, tool, user, socket}) => {
-    
-    const [img, setImg] = useState(null)
-    const [userr, setUserr] = useState(user)
+
 
     useEffect(() => {
         socket.on("whiteboardDataResponse", (data) => {
-            setImg(data.imgURL)
-        })
-    },[])
+            const res = data.updatedData;
 
-    if(userr?.presenter == false){
-        return (
-            <div className='border border-dark border-3 w-100 canvas overflow-hidden'>
-                {img? <img src={img} alt="Real time img" /> : ""}
-            </div>
-        )
-    } 
+            if (canvasRef) {
+              const roughCanvas = rough.canvas(canvasRef.current);
+          
+              if (res.length > 0) {
+                ctxRef.current.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+              }
+          
+              if (res.tool === "pencil") {
+                setElements((prevElements) => [
+                  ...prevElements,
+                  {
+                    type: "pencil",
+                    offsetX: res.offsetX,
+                    offsetY: res.offsetY,
+                    path: res.path,
+                    stroke: res.color,
+                  },
+                ]);
+              } 
+              
+              else if (res.tool === "line") {
+                setElements((prevElements) => [
+                  ...prevElements,
+                  {
+                    type: "line",
+                    offsetX: res.x1,
+                    offsetY: res.y1,
+                    width: res.x2,
+                    height: res.y2,
+                    stroke: res.color
+                  },
+                ]);
+              } 
+              
+              else if (res.tool === "rect") {
+          
+                setElements((prevElements) => [
+                  ...prevElements,
+                  {
+                    type: "rect",
+                    offsetX: res.x1,
+                    offsetY: res.y1,
+                    width: res.x2,
+                    height: res.y2,
+                    stroke: res.color,
+                  },
+                ]);
+              }
+            }
+          });
+          
+            
+        return () => {
+            socket.off("whiteboardDataResponse");
+        };
+    }, [elements]);
+    
 
     const [isDrawing, setIsDrawing] = useState(false)
 
     useEffect(() => {
-        const canvas = canvasRef.current
-        const ctx = canvas.getContext("2d")
-        canvas.height = window.innerHeight * 2
-        canvas.width = window.innerWidth * 2
-
+        const canvas = canvasRef.current;
+        const ctx = canvas.getContext("2d");
+        canvas.height = window.innerHeight * 2;
+        canvas.width = window.innerWidth * 2;
+    
         ctx.strokeStyle = color;
         ctx.lineWidth = 2;
-        ctx.lineCap = "round"
-        ctxRef.current = ctx
-    },[])
+        ctx.lineCap = "round";
+    
+        ctxRef.current = ctx;
+        
 
+    }, [color]);
 
     useEffect(() => {
         ctxRef.current.strokeStyle = color
     },[color])
 
+    
     useLayoutEffect(() => {
         if(canvasRef){
             const roughCanvas = rough.canvas(canvasRef.current)
@@ -70,6 +119,7 @@ const WhiteBoard = ({canvasRef, ctxRef, elements, setElements, color, tool, user
                         })
                 )
                 }
+
                 else if (element.type === "rect"){ 
                     roughCanvas.draw(
                         roughGenerator.rectangle(element.offsetX, element.offsetY, element.width, element.height,
@@ -85,7 +135,7 @@ const WhiteBoard = ({canvasRef, ctxRef, elements, setElements, color, tool, user
         }
     },[elements])
 
-    const handleMouseDown = (e) => {
+    const handleMouseDown = (e) => { 
         const {offsetX, offsetY} = e.nativeEvent
 
         if(tool === "pencil"){
@@ -98,9 +148,9 @@ const WhiteBoard = ({canvasRef, ctxRef, elements, setElements, color, tool, user
                 path: [[offsetX, offsetY]],
                 stroke: color
             }
-        ])} 
+        ])}  
         else if(tool === "line"){
-            setElements((prevElements) => [
+            setElements((prevElements) =>( [
                 ...prevElements,
                 {
                     type: "line",
@@ -110,7 +160,7 @@ const WhiteBoard = ({canvasRef, ctxRef, elements, setElements, color, tool, user
                     height: offsetY,
                     stroke: color
                 }
-            ])
+            ]))
         }
         else if(tool === "rect"){
             setElements((prevElements) => [
@@ -130,10 +180,37 @@ const WhiteBoard = ({canvasRef, ctxRef, elements, setElements, color, tool, user
 
     const handleMouseUp = (e) => {
         setIsDrawing(false)
+        if(tool === "line"){
+            const ele = elements[elements.length-1];
+            const movementData = {
+                tool,
+                x1: ele.offsetX,
+                y1: ele.offsetY,
+                x2: ele.width,
+                y2: ele.height,
+                color : elements[elements.length - 1].stroke
+
+            };
+            socket.emit("whiteboardData", movementData);
+        }
+        if(tool == "rect"){
+            const ele = elements[elements.length-1];
+            const movementData = {
+                tool,
+                x1: ele.offsetX,
+                y1: ele.offsetY,
+                x2: ele.width,
+                y2: ele.height,
+                color : elements[elements.length - 1].stroke
+
+            };
+            socket.emit("whiteboardData", movementData);
+        }
     }
 
     const handleMouseMove = (e) => {
         const { offsetX, offsetY } = e.nativeEvent;
+        
         if (isDrawing) {
             if(tool === "pencil")
             {
@@ -151,7 +228,16 @@ const WhiteBoard = ({canvasRef, ctxRef, elements, setElements, color, tool, user
                     }
                 });
             });
+            const movementData = {
+                tool,
+                offsetX : offsetX,
+                offsetY : offsetY,
+                path: newPath,
+                color : elements[elements.length - 1].stroke
+            };
+            socket.emit("whiteboardData", movementData);
             }
+            
             else if(tool === "line"){
                 setElements((prevElements) => {
                     return prevElements.map((ele, index) => {
@@ -160,12 +246,13 @@ const WhiteBoard = ({canvasRef, ctxRef, elements, setElements, color, tool, user
                                 ...ele,
                                 width: offsetX,
                                 height: offsetY,
-                            };
+                            }
                         } else {
                             return ele;
                         }
                     });
                 });   
+                
             }
             else if(tool === "rect"){
                 setElements((prevElements) => {
@@ -181,9 +268,16 @@ const WhiteBoard = ({canvasRef, ctxRef, elements, setElements, color, tool, user
                         }
                     });
                 }); 
+
+                const movementData = {
+                    tool,
+                    width: offsetX - elements[elements.length - 1].offsetX,
+                    height: offsetY - elements[elements.length - 1].offsetY,
+                    color : elements[elements.length - 1].stroke
+
+                };
+                socket.emit("whiteboardData", movementData);
             }
-            const canvasImage = canvasRef.current.toDataURL()
-            socket.emit("whiteboardData", canvasImage)
         }
     }
     
@@ -192,8 +286,7 @@ const WhiteBoard = ({canvasRef, ctxRef, elements, setElements, color, tool, user
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
       onMouseMove={handleMouseMove}
-      className='rounded-4 border border-3 w-100 canvas overflow-hidden'
-      style={{borderColor: "blue"}}
+      className='border border-dark border-3 w-100 canvas overflow-hidden'
     >
     <canvas
       ref={canvasRef}></canvas>

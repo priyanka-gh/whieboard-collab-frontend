@@ -84,7 +84,6 @@ const RoomPage = ({user, socket, users}) => {
             }
             </div>
             {
-                user?.presenter == true && (
                     <div className="col-md-10 gap-3 px-2 mt-2 mb-3 d-flex align-items-center justify-content-around">
                         <div className="d-flex gap-2 px-3 col-md-2 justify-content-between">
                         <select
@@ -111,14 +110,13 @@ const RoomPage = ({user, socket, users}) => {
                             </div>
                         </div>
                         <div className="col-md-2 d-flex gap-2">
-                            <button className='btn btn-primary mt-1' disabled={elements.length === 0} style={{backgroundColor: "blue"}} onClick={() => undo()}>Undo</button>
+                            <button className='btn btn-primary mt-1' disabled={elements?.length === 0} style={{backgroundColor: "blue"}} onClick={() => undo()}>Undo</button>
                             <button className='btn btn-outline-primary mt-1' disabled={history.length < 1} onClick={() => redo()}>Redo</button>
                         </div>
                         <div className="col-md-2">
                             <button className='btn btn-danger' onClick={handleCanvasClear}>Clear Canvas</button>
                         </div>
                     </div>
-                )
             }
             
             <div className="d-flex gap-2 col-md-12 mb-4 mx-auto mt-3 canvas-box" style={{height: '80%'}}>
