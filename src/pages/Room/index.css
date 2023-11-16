@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600&family=Roboto:wght@600&display=swap');
 .h4{
     text-align: center;
 }
@@ -5,12 +6,76 @@
     display: none;
   }
   
-  /* Hide scrollbar for IE, Edge and Firefox */
-  .hide {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
-  }
+.hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
 .canvas-box{
   position: absolute;
   bottom: 2%;
+}
+
+.activeTab{
+  padding: 15px;
+  border: 3px solid #c1baba;
+  border-top: 0;
+  border-left: 0;
+  border-right: 0;
+  font-size: 16px;
+
+}
+.notActive{
+  font-size: 16px;
+
+}
+.pick{
+  border-radius: 0;
+  padding: 15px;
+  height: 1rem;
+  width: 100%;
+}
+
+button{
+  border: none;
+  outline: none;
+}
+
+h5{
+  font-family: 'Roboto',sans-serif;
+}
+
+.col{
+  
+background: #efefef;
+background: conic-gradient(from 30deg, #dad5d5, #efefef);
+}
+
+.tools:hover{
+  background-color: #dad5d5;
+}
+
+.activePen{
+  background-color: #b7adad;
+}
+.activeCir{
+  background-color: #b7adad;
+}
+ .activeRect {
+  background-color: #b7adad;
+}
+.activeLine{
+  background-color: #b7adad;
+}
+
+.tools:active{
+  background-color: #b7adad;
+
+}
+
+
+.boardBG{
+  background-color: #fff;
+opacity: 0.8;
+background-image:  linear-gradient(#efefef 1px, transparent 1px), linear-gradient(to right, #efefef 1px, #fff 1px);
+background-size: 20px 20px;
 }

@@ -1,3 +1,11 @@
 .form-box {
     height: 400px;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+}
+
+.formBG{
+    background-color: #fff;
+    opacity: 0.8;
+    background-image:  linear-gradient(#efefef 1px, transparent 1px), linear-gradient(to right, #efefef 1px, #fff 1px);
+    background-size: 20px 20px;
 }

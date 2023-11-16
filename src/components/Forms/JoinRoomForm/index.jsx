@@ -43,7 +43,7 @@ const JoinRoomForm = ({uuid, socket, setUser}) => {
                 type="submit" 
                 onClick={handleRoomJoin}
                 className="mt-4 btn btn-primary btn-block form-control"
-                style={{backgroundColor: "blue"}}>Join Room</button>
+                style={{backgroundColor: "#796b6b"}}>Join Room</button>
         </form>
     )
 }

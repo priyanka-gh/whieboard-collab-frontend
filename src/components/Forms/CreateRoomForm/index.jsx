@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import clipboardCopy from "clipboard-copy"; 
+import './index.css'
 
 const CreateRoomForm = ({uuid, socket, setUser}) => {
     const [roomId, setRoomId] = useState(uuid())
@@ -40,13 +41,13 @@ const CreateRoomForm = ({uuid, socket, setUser}) => {
                 <div className="input-group d-flex align-items-center jutify-content-center">
                     <input value={roomId} type="text" placeholder="Generate room code" disabled className="form-control my-2 border-0" />
                     <div className="input-group-append d-flex gap-1">
-                        <button onClick={() => setRoomId(uuid())} className="btn btn-primary me-1" type="button" style={{backgroundColor: "blue"}}>Generate</button>
+                        <button onClick={() => setRoomId(uuid())} className="btn btn-primary me-1" type="button" style={{backgroundColor: "#796b6b"}}>Generate</button>
                         <button className="btn btn-outline-danger btn-sm me-1" type="button" onClick={() => copyToClipboard()}>Copy</button>
                     </div>
                 </div>
             </div>
             <button type="submit" onClick={handleCreateRoom} className="mt-4 btn btn-primary btn-block form-control"
-            style={{backgroundColor: "blue"}}>Generate Room</button>
+            style={{backgroundColor: "#796b6b"}}>Generate Room</button>
         </form>
     )
 }

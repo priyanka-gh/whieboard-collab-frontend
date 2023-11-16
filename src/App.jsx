@@ -6,6 +6,7 @@ import io from "socket.io-client"
 import { useState } from 'react'
 import {toast, ToastContainer} from 'react-toastify'
 import { useCallback } from 'react'
+import "./App.css"
 
 // const server = "https://whiteboard-collab.onrender.com/"
 const server = "http://localhost:5000/"
@@ -59,12 +60,6 @@ const App = () => {
     };
   }, [handleUserIsJoined, userLeftMessage]);
 
-  // useEffect(() => {
-  //   socket.on("userLeftMessageBroadcasted", userLeftMessage)
-  //   return () => {
-  //     socket.off("userLeftMessageBroadcasted");
-  //   };
-  // },[])
 
   useEffect(() => {
     socket.on("userJoinedMessageBroadcasted", handleUserJoinedMessage);
@@ -93,7 +88,7 @@ const App = () => {
     );
   };
   return (
-    <div>
+    <div className='App'>
       <ToastContainer/>
       <div className="container">
         <Router>

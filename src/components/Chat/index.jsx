@@ -1,67 +1,13 @@
-// import React, { useEffect, useState } from 'react';
-// import "./index.css";
-
-// const Chat = ({ openedUserTab, socket }) => {
-//     const [chat, setChat] = useState([]);
-//     const [message, setMessage] = useState("");
-
-//     useEffect(() => {
-//         // Use a cleanup function to remove the socket event listener when the component unmounts.
-//         const messageResponseHandler = (data) => {
-//             setChat((prevChat) => [...prevChat, data]);
-//         };
-//         socket.on("messageResponse", messageResponseHandler);
-
-//         return () => {
-//             socket.off("messageResponse", messageResponseHandler);
-//         };
-//     }, [socket]);
-
-//     const handleSubmit = (e) => {
-//         e.preventDefault();
-//         if (message.trim() !== "") {
-//             socket.emit("message", { message });
-//             setChat((prevChat) => [...prevChat, { message, name: "You" }]);
-//             setMessage(""); 
-//         }
-//     }
-
-//     return (
-//         <div className={`d-flex text-white ${openedUserTab ? "hidechat" : ""}`} style={{ flexDirection: "column", justifyContent: "space-around", alignItems: "center" }}>
-//             <div className='bg-dark content' style={{width: "14rem"}}>
-//                 {
-//                     chat.map((msg, idx) => (
-//                         <div key={idx}>
-//                             <p style={{textAlign: "left", wordWrap: "break-word"}}>{msg.name} : {msg.message}</p>
-//                         </div>
-//                     ))
-//                 }
-//             </div>
-//             <div>
-//             <form onSubmit={handleSubmit} className="mt-4 position-fixed" style={{ bottom: "8%", left:"2.5%" }}>
-//                 <div className=''>
-//                     <input type="text" placeholder='Enter message' className='p-1 h-100 input-field w-auto' value={message} onChange={(e) => setMessage(e.target.value)} />
-//                     <button className='p-1' type="submit">Send</button>
-//                 </div>
-//             </form>
-//             </div>
-//         </div>
-//     );
-// }
-
-// export default Chat;
-
-
-
 import React, { useEffect, useState } from 'react';
 import "./index.css";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 
-const Chat = ({ openedUserTab, socket }) => {
+const Chat = ({ socket }) => {
     const [chat, setChat] = useState([]);
     const [message, setMessage] = useState("");
 
     useEffect(() => {
-        // Use a cleanup function to remove the socket event listener when the component unmounts.
         const messageResponseHandler = (data) => {
             setChat((prevChat) => [...prevChat, data]);
         };
@@ -82,19 +28,18 @@ const Chat = ({ openedUserTab, socket }) => {
     }
 
     return (
-        <div className={`d-flex text-white ${openedUserTab ? "hidechat" : ""}`} style={{ flexDirection: "column", justifyContent: "space-around", alignItems: "center" }}>
-            <h5>Chats</h5>
-            <div className='hide content' style={{ width: "14rem", overflowY: 'auto', marginBottom:"3rem" }}>
+        <div className= "d-flex chat text-dark w-auto" style={{ flexDirection: "column",  alignItems: "center" }}>
+            <div className='hide content w-100' style={{ width: "14rem", overflowY: 'auto', marginBottom:"3rem" }}>
                 {chat.map((msg, idx) => (
                     <div key={idx}>
-                        <p style={{ textAlign: "left", wordWrap: "break-word" }}>{msg.name} : {msg.message}</p>
+                        <p style={{ textAlign: "left", wordWrap: "break-word", color: "white"}}>{msg.name} : {msg.message}</p>
                     </div>
                 ))}
             </div>
-            <form onSubmit={handleSubmit} className="mt-4 position-fixed" style={{ bottom: "8%", left: "2.5%" }}>
+            <form onSubmit={handleSubmit} className="mt-4 position-absolute form" style={{ bottom: "4%" }}>
                 <div className='gap-2 d-flex'>
-                    <input type="text" placeholder='Enter message' className='p-2 h-100 input-field w-auto' value={message} onChange={(e) => setMessage(e.target.value)} />
-                    <button className='bg-white btn' type="submit">Send</button>
+                    <input type="text" placeholder='Enter message' className='p-1 input-field' value={message} onChange={(e) => setMessage(e.target.value)} />
+                    <button className='bg-white btn' type="submit"><FontAwesomeIcon className='faPlane' icon={faPaperPlane} /></button>
                 </div>
             </form>
         </div>

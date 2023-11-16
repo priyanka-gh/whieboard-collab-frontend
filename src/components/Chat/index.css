@@ -1,8 +1,6 @@
 .input{
-    bottom: 4%;
     width: max-content;
     position: relative;
-    left: 0;
     outline: none;
 }
 
@@ -10,11 +8,12 @@ button{
     outline: none;
 }
 .input-field{
-    width: max-content;
+    width: 10rem;
 }
 
 .content{
-    height: 55vh;
+    height: 80vh;
+    padding: 10px;
 }
 
 .hidechat{
@@ -45,4 +44,14 @@ input:focus, button:focus{
 }
 .btn:hover{
     color: blue;
+}
+
+.chat{
+    z-index: 1;
+}
+
+.faPlane{
+    color: rgb(94, 132, 163);
+    transform: rotate(30deg);
+
 }

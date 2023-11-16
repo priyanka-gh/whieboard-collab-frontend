@@ -3,6 +3,11 @@ import { useRef } from 'react'
 import WhiteBoard from '../../components/Whiteboard'
 import './index.css'
 import Chat from "../../components/Chat/index"
+import { RiRectangleLine } from "react-icons/ri";
+import { FaRegCircle, FaPen } from "react-icons/fa";
+import { CiRedo, CiUndo } from "react-icons/ci";
+import { RxCross1 } from "react-icons/rx";
+import { IoArrowUpOutline } from "react-icons/io5";
 
 const RoomPage = ({user, socket, users}) => {
     
@@ -12,7 +17,6 @@ const RoomPage = ({user, socket, users}) => {
     const [ color, setColor] = useState("black")
     const [elements, setElements] = useState([])
     const [ history, setHistory] = useState([])
-    const [openedUserTab, setOpenedUserTab] = useState(false)
     
     const handleCanvasClear = () => {
         const canvas = canvasRef.current
@@ -20,10 +24,14 @@ const RoomPage = ({user, socket, users}) => {
         ctx.fillRect = "white"
         ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height)
 
+        socket.emit("clearCanvas")
         setElements([])
     }
 
     const undo = () => {
+        const undoneElement = elements[elements.length - 1];
+        socket.emit('whiteboardUndo', { element: undoneElement });
+
         setHistory((prevHistory) => [
           ...prevHistory,
           elements[elements.length - 1],
@@ -31,99 +39,53 @@ const RoomPage = ({user, socket, users}) => {
         setElements((prevElements) =>
           prevElements.filter((ele, index) => index !== elements.length - 1)
         );
+        console.log("elements",elements)
       };
       
     const redo = () => {
-    setElements((prevElements) => [
-        ...prevElements,
-        history[history.length - 1],
-    ]);
-    setHistory((prevHistory) =>
-        prevHistory.filter((ele, index) => index !== history.length - 1)
-    );
+        const redoneElement = history[history.length - 1];
+        socket.emit('whiteboardRedo', { element: redoneElement });
+
+        setElements((prevElements) => [
+            ...prevElements,
+            history[history.length - 1],
+        ]);
+        setHistory((prevHistory) =>
+            prevHistory.filter((ele, index) => index !== history.length - 1)
+        );
     };
 
-    const showsidebar = () => {
-        setOpenedUserTab(!openedUserTab)
+    const [tab, setTab] = useState("chat")
+
+    const toggle = (tabVal) => {
+        setTab(tabVal)
     }
 
     return (
-        <div className="row d-flex align-items-center justify-content-center ">
-            <div className='mt-4'>
-            <button type='button' 
-                onClick={showsidebar}
-                className='btn text-white' 
-                style={{ 
-                    position: "absolute", 
-                    top: "2%", 
-                    left: "2%",
-                    height:"40px", 
-                    width: "100px",
-                    backgroundColor: "blue"}}>
-                    Users ({users.length})
-            </button>
-            {
-                openedUserTab && (
-                    <div className="position-fixed top-0 h-100 text-white" 
-                        style={{width:"250px", left: "0%", padding:"1rem", backgroundColor: "blue"}}
-                    >
-                        <button 
-                            type='button' 
-                            onClick={() => setOpenedUserTab(!openedUserTab)}
-                            className='btn btn-light mt-3 position-relative'
-                            style={{left: "10rem", borderRadius: "50%"}}>
-                                X
-                        </button>
-                        {
-                            users.map((usr, index) => (
-                                <p style={{marginTop : "1rem"}} key={index*999}>{usr?.name}</p>
-                            ))
-                        }
-                    </div>
-                )
-            }
-            </div>
-            {
-                    <div className="col-md-10 gap-3 px-2 mt-2 mb-3 d-flex align-items-center justify-content-around">
-                        <div className="d-flex gap-2 px-3 col-md-2 justify-content-between">
-                        <select
-                            id="toolSelect"
-                            value={tool}
-                            onChange={(e) => setTool(e.target.value)}
-                            className="p-2 border text-white"
-                            style={{backgroundColor: "#7777c7"}}
-                        >
-                            <option value="pencil">Pencil</option>
-                            <option value="line">Line</option>
-                            <option value="rect">Rectangle</option>
-                            <option value="circle">Circle</option>
-                        </select>
-                        </div>
-                        <div className="col-md-2">
-                            <div className="d-flex mx-3 ">
-                                <input
-                                    type="color"
-                                    id="color"
-                                    className='mt-1 ms-3 '
-                                    value={color}
-                                    onChange={(e) => setColor(e.target.value)}>
-                                </input>
-                            </div>
-                        </div>
-                        <div className="col-md-2 d-flex gap-2">
-                            <button className='btn btn-primary mt-1' disabled={elements?.length === 0} style={{backgroundColor: "blue"}} onClick={() => undo()}>Undo</button>
-                            <button className='btn btn-outline-primary mt-1' disabled={history.length < 1} onClick={() => redo()}>Redo</button>
-                        </div>
-                        <div className="col-md-2">
-                            <button className='btn btn-danger' onClick={handleCanvasClear}>Clear Canvas</button>
-                        </div>
-                    </div>
-            }
-            
-            <div className="d-flex gap-2 col-md-12 mb-4 mx-auto mt-3 canvas-box" style={{height: '80%'}}>
-                <div className={`px-5 rounded-4 d-flex justify-content-center ${openedUserTab? "hidechat":""} hide`} style={{width: "350px", backgroundColor: "blue"}}>
-                    <Chat openedUserTab={openedUserTab} socket={socket}/>
+        <div className="d-flex" style={{height:"100vh", flexDirection:"column", alignItems:"center", justifyContent:"center"}}>
+            <div className='col' style={{ width:"17%", height:"100%", position:"absolute", left:"0"}}>
+                <div className='d-flex p-2 align-items-center justify-content-around m-0'>
+                    <h5 onClick={() => toggle("chat")} style={{width: "100%", padding:"10px"}} className={`${tab=="chat" ? "activeTab" : "notActive"} m-2`}>Chat</h5>
+                    <h5 onClick={() => toggle("users")} style={{width: "100%", padding:"10px"}} className={`${tab=="users" ? "activeTab" : "notActive"} m-2`}>Users ({`${users.length}`})</h5>
                 </div>
+                {
+                    tab == "chat" && (
+                        <Chat socket={socket}/>
+                    )
+                }
+                {
+                    tab === "users" && (
+                        <div style={{padding: "10px"}}>
+                        {users.map((user) => (
+                            <div>
+                            <h5>{user.name}</h5>
+                            </div>
+                        ))}
+                        </div>
+                    )
+                }
+            </div>
+            <div className='boardBG' style={{width: "83%", height:"100%", position:"absolute", right:"0"}}>
                 <WhiteBoard 
                 canvasRef={canvasRef} 
                 ctxRef={ctxRef}
@@ -135,8 +97,52 @@ const RoomPage = ({user, socket, users}) => {
                 socket={socket}
                 />
             </div>
+            <div style={{position:"absolute", right:"10px"}} className="d-flex flex-column align-items-center justify-content-around">
+                <button
+                    onClick={() => setTool('pencil')}
+                    className={`p-4 tools ${tool=="pencil"? "activePen":""}`}
+                >
+                    <FaPen/>
+                </button>
+                <button
+                    onClick={() => setTool('line')}
+                    className={`p-4 tools ${tool=="line"? "activeLine":""}`}
+                >
+                    <IoArrowUpOutline/>
+                </button>
+                <button
+                    onClick={() => setTool('rect')}
+                    className={`p-4 tools ${tool=="rect"? "activeRect":""}`}
+                >
+                    <RiRectangleLine/>
+                </button>
+                <button
+                    onClick={() => setTool('circle')}
+                    className={`p-4 tools ${tool=="circle"? "activeCir":""}`}
+                >
+                    <FaRegCircle />
+                </button>
+                <input
+                    type="color"
+                    id="color"
+                    value={color}
+                    className={`pick tools}`}
+                    onChange={(e) => setColor(e.target.value)}
+                >
+                </input>
+                <button disabled={elements?.length === 0}  onClick={() => undo()} className="p-4 tools">
+                    <CiUndo />
+                </button>
+                <button disabled={history.length < 1} onClick={() => redo()} className="p-4 tools">
+                    <CiRedo/>
+                </button>
+                <button onClick={handleCanvasClear} className="p-4 tools">
+                    <RxCross1/>
+                </button>
+            </div>
         </div>
   )
 }
 
 export default RoomPage
+
